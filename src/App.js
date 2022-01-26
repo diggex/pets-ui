@@ -18,6 +18,7 @@ function App() {
 
     const [owners, setOwners] = useState(false);
     const [expandedKeys, setExpandedKeys] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetch(`http://${process.env.REACT_APP_API_HOST}/api/owners`)
@@ -53,6 +54,7 @@ function App() {
 
                 setOwners(treeData);
                 setExpandedKeys(keys)
+                setLoading(false);
             })
             .catch((error) => {
                 // this.setState({ errorMessage: error.toString() });
@@ -60,7 +62,7 @@ function App() {
             });
     }, []);
 
-    return (
+    return !loading ?  (
         <Tree
             showIcon
             defaultExpandAll
@@ -68,7 +70,7 @@ function App() {
             switcherIcon={<DownOutlined />}
             treeData={owners}
         />
-    );
+    ) : ("loading");
 }
 
 export default App;

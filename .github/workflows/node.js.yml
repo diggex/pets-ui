@@ -28,7 +28,6 @@ jobs:
     - run: export REACT_APP_API_HOST=https://174.129.90.251/
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test
     - name: Deploy to EC2 Server 
       uses: easingthemes/ssh-deploy@main
       env:

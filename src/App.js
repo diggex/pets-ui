@@ -1,14 +1,9 @@
 import React,  { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
 import './index.css';
 import { Tree } from 'antd';
 import {
   DownOutlined,
-  FrownOutlined,
-  SmileOutlined,
-  MehOutlined,
-  FrownFilled,
 } from '@ant-design/icons';
 
 

@@ -1,63 +1,60 @@
-import React,  { useEffect, useState } from 'react';
-import 'antd/dist/antd.css';
-import './index.css';
-import { Tree } from 'antd';
+import React, { useEffect, useState } from 'react'
+import 'antd/dist/antd.css'
+import './index.css'
+import { Tree, Space, Card } from 'antd'
 import {
-  DownOutlined,
-} from '@ant-design/icons';
+  DownOutlined
+} from '@ant-design/icons'
 
+const treeData = []
 
-const treeData = [];
+function App () {
+  const [owners, setOwners] = useState(false)
+  const [expandedKeys, setExpandedKeys] = useState(false)
 
-function App() {
+  useEffect(() => {
+    fetch(`http://${process.env.REACT_APP_API_HOST}/api/owners`)
+      .then(async (response) => {
+        const responseData = await response.json()
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response statusText
+          const error = (responseData && responseData.message) || response.statusText
+          return Promise.reject(error)
+        }
 
-    const [owners, setOwners] = useState(false);
-    const [expandedKeys, setExpandedKeys] = useState(false);
-    const [loading, setLoading] = useState(true);
+        let i = 0
+        const keys = []
 
-    useEffect(() => {
-        fetch(`http://${process.env.REACT_APP_API_HOST}/api/owners`)
-            .then(async (response) => {
-                const responseData = await response.json();
-                // check for error response
-                if (!response.ok) {
-                    // get error message from body or default to response statusText
-                    const error = ( responseData && responseData.message) || response.statusText;
-                    return Promise.reject(error);
-                }
+        for (const key in responseData.data) {
+          treeData.push({
+            title: key,
+            key: i,
+            children: []
+          })
 
-                let i=0;
-                let keys = [];
-                
-                for (const key in responseData.data) {
+          keys.push(i)
 
-                    treeData[i] = {};
-                    treeData[i].title = key;
-                    treeData[i].key = i;
-                    treeData[i].children = [];
-                    
-                    keys.push(i);
-
-                    for (const k in responseData.data[key]) {
-                        let childTitle = {};
-                        childTitle.title = responseData.data[key][k]
-                        treeData[i].children.push(childTitle);
-                    };
-
-                    i++ ;
-                } 
-
-                setOwners(treeData);
-                setExpandedKeys(keys)
-                setLoading(false);
+          for (const k in responseData.data[key]) {
+            treeData[i].children.push({
+              title: responseData.data[key][k]
             })
-            .catch((error) => {
-                // this.setState({ errorMessage: error.toString() });
-                console.error('There was an error!', error);
-            });
-    }, []);
+          }
 
-    return !loading ?  (
+          i++
+        }
+
+        setOwners(treeData)
+        setExpandedKeys(keys)
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
+  }, [])
+
+  return (
+        <Space direction="vertical">
+        <Card title="Owners of Pets" style={{ width: 300 }}>
         <Tree
             showIcon
             defaultExpandAll
@@ -65,7 +62,9 @@ function App() {
             switcherIcon={<DownOutlined />}
             treeData={owners}
         />
-    ) : ("loading");
+        </Card>
+        </Space>
+  )
 }
 
-export default App;
+export default App
